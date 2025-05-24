@@ -2,15 +2,18 @@
 
 > 🚀 **Build ANY type of ADK agent** - from simple chatbots to complex multi-agent systems - using production-ready templates extracted from Google's official repositories.
 
-## What is this?
+## ⚠️ Current Status
 
-The Universal ADK Agent Starter Kit is a comprehensive framework that enables anyone to build Google ADK 1.0+ agents quickly and correctly. It provides:
+**The extraction framework is complete, but the actual code extraction from Google repositories needs to be run.**
 
-- ✅ **Extracted Templates** - Real code from google/adk-samples, not invented patterns
-- ✅ **Production Infrastructure** - Terraform, CI/CD, monitoring from agent-starter-pack
-- ✅ **Flexible Configuration** - Support any namespace, project, or deployment target
-- ✅ **Optional Advanced Features** - RAG, A2A protocol, evaluation frameworks
-- ✅ **ADK 1.0 Compatible** - Uses the latest `google.adk` imports
+### What's Ready:
+- ✅ Complete extraction plan documenting exactly which files to extract
+- ✅ Scripts to automate the entire process (`setup.py`, `extract.py`, `create_agent.py`)
+- ✅ Some template examples created with ADK 1.0 patterns
+- ✅ Full documentation and examples
+
+### What's Needed:
+Run the extraction process to pull real code from the 6 official Google repositories.
 
 ## Quick Start
 
@@ -19,7 +22,7 @@ The Universal ADK Agent Starter Kit is a comprehensive framework that enables an
 git clone https://github.com/JustinAIDistuptors/universal-adk-agent-starter-kit.git
 cd universal-adk-agent-starter-kit
 
-# 2. Run the setup script
+# 2. Run the setup script (this will clone source repos and extract code)
 python setup.py
 
 # 3. Configure your project
@@ -33,6 +36,16 @@ cd src/[your-namespace]/agents/my_first_agent
 adk run my_first_agent
 ```
 
+## What is this?
+
+The Universal ADK Agent Starter Kit is a comprehensive framework that enables anyone to build Google ADK 1.0+ agents quickly and correctly. It provides:
+
+- ✅ **Extracted Templates** - Real code from google/adk-samples, not invented patterns
+- ✅ **Production Infrastructure** - Terraform, CI/CD, monitoring from agent-starter-pack
+- ✅ **Flexible Configuration** - Support any namespace, project, or deployment target
+- ✅ **Optional Advanced Features** - RAG, A2A protocol, evaluation frameworks
+- ✅ **ADK 1.0 Compatible** - Uses the latest `google.adk` imports
+
 ## Repository Structure
 
 ```
@@ -42,7 +55,7 @@ universal-adk-agent-starter-kit/
 ├── create_agent.py             # Creates new agents from templates
 ├── starter-kit.yaml            # Your project configuration
 │
-├── .starter-kit/               # Extracted templates (after setup)
+├── .starter-kit/               # Extracted templates (after running extract.py)
 │   └── templates/
 │       ├── simple_agent/       # Basic single agent
 │       ├── multi_agent/        # Multi-agent with sub-agents
@@ -64,6 +77,17 @@ universal-adk-agent-starter-kit/
 │
 └── docs/                       # Documentation
 ```
+
+## The 6 Source Repositories
+
+All code is extracted from these official Google repositories:
+
+1. **[google/adk-samples](https://github.com/google/adk-samples)** - ADK agent examples
+2. **[GoogleCloudPlatform/agent-starter-pack](https://github.com/GoogleCloudPlatform/agent-starter-pack)** - Production scaffolding
+3. **[google/adk-python](https://github.com/google/adk-python)** - Testing framework
+4. **[google/a2a-python](https://github.com/google/a2a-python)** - Agent communication
+5. **[GoogleCloudPlatform/generative-ai](https://github.com/GoogleCloudPlatform/generative-ai)** - RAG implementations
+6. **[GoogleCloudPlatform/vertex-ai-samples](https://github.com/GoogleCloudPlatform/vertex-ai-samples)** - Deployment patterns
 
 ## Agent Types
 
@@ -125,7 +149,7 @@ features:
 python setup.py
 ```
 - Clones official Google repositories
-- Extracts agent templates and infrastructure code
+- Runs `extract.py` to pull real code
 - Sets up Python environment with ADK 1.0+
 - Creates configuration template
 
@@ -160,34 +184,15 @@ terraform apply
 python deployment/deploy.py --agent my_agent
 ```
 
-## Advanced Features
+## Examples
 
-### Enable RAG (Retrieval-Augmented Generation)
-1. Set `enable_rag: true` in starter-kit.yaml
-2. Create a RAG agent: `python create_agent.py --type rag --name doc_expert`
-3. Configure Vertex AI Vector Search in the agent
-
-### Enable A2A (Agent-to-Agent Communication)
-1. Set `enable_a2a: true` in starter-kit.yaml
-2. Agents automatically get A2A bridge code
-3. See `a2a_manifest.yaml` for agent registry
-
-### Production CI/CD
-1. Set `enable_ci: true` in starter-kit.yaml
-2. Push to GitHub
-3. Cloud Build automatically tests and deploys
+See `examples/INSTABIDS_EXAMPLE.md` for a complete example of building a multi-agent marketplace.
 
 ## Source Attribution
 
-All code in this repository is extracted from official Google repositories:
-
-- **Agent Templates**: [google/adk-samples](https://github.com/google/adk-samples)
-- **Infrastructure**: [GoogleCloudPlatform/agent-starter-pack](https://github.com/GoogleCloudPlatform/agent-starter-pack)
-- **Testing Framework**: [google/adk-python](https://github.com/google/adk-python)
-- **A2A Protocol**: [google/A2A](https://github.com/google/A2A)
-- **RAG Implementation**: [GoogleCloudPlatform/generative-ai](https://github.com/GoogleCloudPlatform/generative-ai)
-
-Every extracted file includes attribution comments pointing to its source.
+Every file extracted includes attribution comments pointing to its source repository. The extraction process is documented in:
+- `EXTRACTION_SCRIPT.md` - Detailed file mappings
+- `extract.py` - Automated extraction script
 
 ## Requirements
 
@@ -198,70 +203,17 @@ Every extracted file includes attribution comments pointing to its source.
 ## Troubleshooting
 
 ### "Templates not found"
-Run `python extract.py` to extract templates from source repositories.
+Run `python setup.py` to clone repositories and extract templates.
 
 ### "ADK command not found"
 Activate your virtual environment: `source venv/bin/activate`
 
 ### "Import error: google.adk"
-Install ADK 1.0+: `pip install google-adk>=1.0.0`
-
-### Deployment Issues
-Check that your GCP project has the required APIs enabled:
-- Vertex AI API
-- Cloud Run API (if using Cloud Run)
-- Cloud Build API (if using CI/CD)
-
-## Examples
-
-### Example 1: Simple Customer Service Bot
-```bash
-# Create the agent
-python create_agent.py --type simple --name customer_bot \
-  --description "Handles customer inquiries"
-
-# Customize the agent
-cd src/mycompany/agents/customer_bot
-# Edit agent.py to add your business logic
-
-# Test locally
-adk run customer_bot
-
-# Deploy to production
-cd deployment/agents/customer_bot
-terraform apply
-```
-
-### Example 2: Multi-Agent Research System
-```bash
-# Create multi-agent system
-python create_agent.py --type multi --name research_system \
-  --description "Coordinates multiple research agents"
-
-# The system includes:
-# - Orchestrator agent
-# - Web search sub-agent  
-# - Summary sub-agent
-# - Citation sub-agent
-```
-
-### Example 3: RAG-Powered Documentation Assistant
-```bash
-# Enable RAG in config
-# Edit starter-kit.yaml: enable_rag: true
-
-# Create RAG agent
-python create_agent.py --type rag --name doc_assistant \
-  --description "Answers questions using company documentation"
-
-# Configure vector search
-# Follow setup in src/mycompany/agents/doc_assistant/README.md
-```
+The setup script installs ADK 1.0+. If you installed manually, ensure you have the latest version.
 
 ## Contributing
 
-This starter kit is built by extracting code from official Google repositories. To contribute:
-
+This starter kit extracts code from official Google repositories. To contribute:
 1. Identify the source repository and file
 2. Update `extract.py` with the new extraction
 3. Ensure proper attribution is included
