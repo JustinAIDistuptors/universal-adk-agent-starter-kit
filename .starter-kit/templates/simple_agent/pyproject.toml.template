@@ -2,38 +2,40 @@
 # Part of the Universal ADK Agent Starter Kit
 # Original source: https://github.com/google/adk-samples/python/agents/llm-auditor/
 
-[tool.poetry]
+[project]
 name = "{{agent_name}}"
 version = "0.1.0"
 description = "{{agent_description}}"
-authors = ["{{author_name}} <{{author_email}}>"]
+authors = [
+    { name = "{{author_name}}", email = "{{author_email}}" },
+]
+license = "Apache License 2.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-google-adk = "^1.0.0"
-pydantic = "^2.0"
-python-dotenv = "^1.0.0"
+python = "^3.10"
+google-adk = "^0.5.0"
+google-cloud-aiplatform = { extras = [
+    "adk",
+    "agent-engines",
+], version = "^1.93.0" }
+google-genai = "^1.9.0"
+pydantic = "^2.10.6"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-pytest-asyncio = "^0.21.0"
-ruff = "^0.1.0"
+google-adk = { version = "^0.5.0", extras = ["eval"] }
+pytest = "^8.3.5"
 
 [tool.poetry.group.deployment]
 optional = true
 
 [tool.poetry.group.deployment.dependencies]
-google-cloud-aiplatform = "^1.38.0"
+absl-py = "^2.2.1"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.ruff]
-line-length = 100
-target-version = "py39"
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "test_*.py"
