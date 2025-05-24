@@ -2,26 +2,36 @@
 # Part of the Universal ADK Agent Starter Kit
 # Original source: https://github.com/google/adk-samples/python/agents/llm-auditor/
 
-"""LLM Auditor Agent - Main agent that coordinates fact-checking."""
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-from google.adk.agents import LlmAgent
-from google.genai import types
+"""{{agent_description}}"""
+
+from google.adk.agents import SequentialAgent
+
 from .sub_agents.critic import critic_agent
 from .sub_agents.reviser import reviser_agent
 
-# Define the root agent that coordinates the auditing process
-root_agent = LlmAgent(
-    name="{{agent_name}}",
-    model="{{model_name|default:gemini-2.0-flash}}",
-    system_instruction="""You are an LLM Auditor. Your role is to verify statements and 
-    ensure factual accuracy by coordinating with specialized sub-agents.
-    
-    For each user input:
-    1. First, send it to the Critic agent to fact-check
-    2. If the Critic finds issues, send the critique to the Reviser
-    3. Return the final verified/revised response
-    
-    Always prioritize accuracy over everything else.""",
-    agents=[critic_agent, reviser_agent],
-    enable_auto_transfer=True,
+
+{{agent_name}} = SequentialAgent(
+    name='{{agent_name}}',
+    description=(
+        '{{agent_long_description|default:Evaluates LLM-generated answers, verifies actual accuracy using the'
+        ' web, and refines the response to ensure alignment with real-world'
+        ' knowledge.}}'
+    ),
+    sub_agents=[critic_agent, reviser_agent],
 )
+
+root_agent = {{agent_name}}
