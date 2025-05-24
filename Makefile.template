@@ -1,0 +1,129 @@
+# Extracted from GoogleCloudPlatform/agent-starter-pack patterns
+# Part of the Universal ADK Agent Starter Kit
+# Makefile template for agent projects
+
+# Configuration
+PROJECT_ID := {{project_id}}
+LOCATION := {{location|default:us-central1}}
+AGENT_NAME := {{agent_name}}
+NAMESPACE := {{namespace}}
+
+# Python setup
+PYTHON := python3
+VENV := venv
+PIP := $(VENV)/bin/pip
+PYTHON_VENV := $(VENV)/bin/python
+
+# Default target
+.PHONY: help
+help:
+	@echo "Universal ADK Agent Starter Kit - {{agent_display_name}}"
+	@echo ""
+	@echo "Setup commands:"
+	@echo "  make setup          - Create virtual environment and install dependencies"
+	@echo "  make install        - Install dependencies (requires active venv)"
+	@echo ""
+	@echo "Development commands:"
+	@echo "  make run            - Run the agent locally"
+	@echo "  make test           - Run tests"
+	@echo "  make lint           - Run code linting"
+	@echo "  make format         - Format code"
+	@echo ""
+	@echo "Deployment commands:"
+	@echo "  make deploy         - Deploy to Cloud Run"
+	@echo "  make deploy-engine  - Deploy to Agent Engine"
+	@echo "  make logs           - View deployment logs"
+	@echo ""
+	@echo "Configuration:"
+	@echo "  PROJECT_ID: $(PROJECT_ID)"
+	@echo "  LOCATION: $(LOCATION)"
+	@echo "  AGENT_NAME: $(AGENT_NAME)"
+
+# Setup virtual environment
+.PHONY: setup
+setup:
+	$(PYTHON) -m venv $(VENV)
+	$(PIP) install --upgrade pip
+	$(PIP) install poetry
+	$(VENV)/bin/poetry install
+
+# Install dependencies
+.PHONY: install
+install:
+	poetry install
+
+# Run the agent locally
+.PHONY: run
+run:
+	adk run $(AGENT_NAME)
+
+# Run with web UI
+.PHONY: web
+web:
+	adk web
+
+# Run tests
+.PHONY: test
+test:
+	pytest tests/
+
+# Run evaluation
+.PHONY: eval
+eval:
+	adk eval tests/$(AGENT_NAME)_eval.json
+
+# Lint code
+.PHONY: lint
+lint:
+	ruff check .
+
+# Format code
+.PHONY: format
+format:
+	ruff format .
+
+# Build Docker image
+.PHONY: docker-build
+docker-build:
+	docker build -t gcr.io/$(PROJECT_ID)/$(AGENT_NAME):latest .
+
+# Push Docker image
+.PHONY: docker-push
+docker-push: docker-build
+	docker push gcr.io/$(PROJECT_ID)/$(AGENT_NAME):latest
+
+# Deploy to Cloud Run
+.PHONY: deploy
+deploy: docker-push
+	gcloud run deploy $(AGENT_NAME) \
+		--image gcr.io/$(PROJECT_ID)/$(AGENT_NAME):latest \
+		--platform managed \
+		--region $(LOCATION) \
+		--allow-unauthenticated \
+		--project $(PROJECT_ID)
+
+# Deploy to Agent Engine
+.PHONY: deploy-engine
+deploy-engine:
+	cd deployment && python deploy.py --create
+
+# View logs
+.PHONY: logs
+logs:
+	gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=$(AGENT_NAME)" \
+		--limit 50 \
+		--project $(PROJECT_ID) \
+		--format "table(timestamp,severity,textPayload)"
+
+# Clean up
+.PHONY: clean
+clean:
+	rm -rf $(VENV)
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+
+# Create .env from example
+.PHONY: env
+env:
+	cp .env.example .env
+	@echo "Created .env file. Please edit it with your configuration."
